@@ -160,7 +160,7 @@ class MemoryRead (threading.Thread):
                     self.thread = ReadMemoryAdress(pm,client)
                     self.thread.start()
                     self.readingMemory = True
-                    self.tray_icon.setNewIcon(QtGui.QIcon("iconG.png"))
+                    self.tray_icon.setNewIcon(QtGui.QIcon("assets/iconG.png"))
                     self.tray_icon.setNewToolTip(f"Reading memory @ {hex(client+  0x3592528)}")
                     
 
@@ -171,7 +171,7 @@ class MemoryRead (threading.Thread):
                     pass
             if self.readingMemory:
                 if not self.thread.is_alive():
-                    self.tray_icon.setNewIcon(QtGui.QIcon("icon.png"))
+                    self.tray_icon.setNewIcon(QtGui.QIcon("assets/icon.png"))
                     self.tray_icon.setNewToolTip(f"Not Monitoring Memory")
                     self.readingMemory = False
                     
@@ -185,7 +185,7 @@ class MemoryRead (threading.Thread):
         
         self.paused = not (bool(self.paused))
         if(self.paused):
-            self.tray_icon.setIcon(QtGui.QIcon("icon.png"))
+            self.tray_icon.setIcon(QtGui.QIcon("assets/icon.png"))
             self.tray_icon.setNewToolTip(f"Not Monitoring Memory (Paused)")
         else:
             self.tray_icon.setNewToolTip(f"Not Monitoring Memory")
@@ -260,7 +260,7 @@ class RecordInput(threading.Thread):
 def main():
     app = QtWidgets.QApplication(sys.argv)
     w = QtWidgets.QWidget()
-    tray_icon = SystemTrayIcon(QtGui.QIcon("icon.png"),w)
+    tray_icon = SystemTrayIcon(QtGui.QIcon("assets/icon.png"),w)
     mR = MemoryRead(tray_icon,w)
     mR.start()
     tray_icon.setThread(mR)
