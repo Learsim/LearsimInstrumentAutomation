@@ -101,6 +101,8 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
+.vscode
+
 # Environments
 .env
 .venv
@@ -109,7 +111,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
+Scripts/
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -127,3 +129,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+pyvenv.cfg

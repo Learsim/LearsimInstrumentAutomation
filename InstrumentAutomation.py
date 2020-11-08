@@ -14,7 +14,7 @@ from os import system, name
 
 screenWidht, screenHeight = pyautogui.size()
 configLocation = "config.json"
-testADR = (0x3592528)
+ADDRESS_OFFSET = (0x3592528)
 
 #0x7ff6b1ba2528
 
@@ -22,12 +22,12 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
     def __init__(self,icon,parent=None):
         QtWidgets.QSystemTrayIcon.__init__(self,icon,parent)
         menu = QtWidgets.QMenu(parent)
-        
+        self.isRecording = False
         toggleMemoryRead = menu.addAction("Toggle Memory Reading")
         toggleMemoryRead.triggered.connect(self.toggleReading)
         recordNewSequence = menu.addAction("Record New Sequence")
         recordNewSequence.triggered.connect(self.NewSequence)
-        recordNewSequence.setEnabled(False)
+        #recordNewSequence.setEnabled(False)
         openConfig = menu.addAction("Open Configuration")
         openConfig.triggered.connect(self.open_config)
 
@@ -50,8 +50,10 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         if reason == self.DoubleClick:
             print("DoubleClick")
     def exit(self, reason):
+        self.setIcon(QtGui.QIcon("assets/iconE.png"))
+        self.setToolTip("Shutting Down...")
         self.thread.exitThread()
-
+        if self.isRecording: self.recording.exitThread()
         sys.exit()
     def setThread(self, thread):
         self.thread = thread
@@ -65,8 +67,9 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
     def setNewIcon(self,icon):
         self.setIcon(icon)
     def NewSequence(self):
-        recording = RecordInput()
-        recording.start()
+        self.isRecording = True 
+        self.recording = RecordInput()
+        self.recording.start()
 
 
 f = open(configLocation, "r")
@@ -150,6 +153,7 @@ class MemoryRead (threading.Thread):
         self.RunThread = True
         self.paused = False
         self.readingMemory = False
+        self.recordingThread = False
         self.thread = ''
     def run(self):
         while self.RunThread:
@@ -178,8 +182,9 @@ class MemoryRead (threading.Thread):
         
     def exitThread(self):
         self.RunThread = False
-        if self.thread.is_alive:
-            self.thread.exitThread()
+        if self.recordingThread:    
+            if self.thread.is_alive():
+                self.thread.exitThread()
     
     def togglePauseReading (self):
         
@@ -201,15 +206,15 @@ class ReadMemoryAdress(threading.Thread):
         self.ProcessModule = client
         self.value = 'NaN'
         system('cls') 
-        print(f"Started memory monitoring...... @ {hex(client+  0x3592528)}")
+        print(f"Started memory monitoring...... @ {hex(client+  ADDRESS_OFFSET)}")
     def run(self):
         try:
             while True:
                 if not self.RunThread:
                     break
-                testread = self.Process.read_int(self.ProcessModule+  0x3592528)
+                testread = self.Process.read_int(self.ProcessModule+  ADDRESS_OFFSET)
                 
-                if(testread == 256 and testread != self.value and self.value == 0):
+                if(testread == 256 and testread != self.value and (self.value == 0 or self.value == 'NaN')):
                     doAuto()
                     self.value = testread
                     print("Detected Cockpit")
@@ -228,32 +233,35 @@ class RecordInput(threading.Thread):
         threading.Thread.__init__(self)
         self.RunThread = True
         self.Recording = True
-        
+        self.Sequence = []
+        keyboard.add_hotkey('num 1',self.KeyPress,args=[1])
+        keyboard.add_hotkey('num 2',self.KeyPress,args=[2])
+        keyboard.add_hotkey('num 3',self.KeyPress,args=[3])
+        keyboard.add_hotkey('num 4',self.KeyPress,args=[4])
     def run(self):
         print("Recording New Input")
         while self.Recording:
-            if keyboard.is_pressed("num 1"):
-                print("1")
-            elif keyboard.is_pressed("num 2"):
-                print("2")
-            elif keyboard.is_pressed("num 3"):
-                print("3")
-            elif keyboard.is_pressed("num 4"):
-                print("4")
-            elif keyboard.is_pressed("num 5"):
-                print("5")
-            elif keyboard.is_pressed("F12"):
-                print("num *")
+            if keyboard.is_pressed("F12"):
                 self.exitThread()
                 return
-            else:
-                print("EE")
-
 
     def exitThread(self):
         print("Stopped Recording")
+        print(self.Sequence)
         self.Recording = False
         self.RunThread = False
+
+    def KeyPress(self,num):
+        print(num)
+        mousePos = pyautogui.position()
+        if num == 1:
+            self.Sequence.append({"type":"move","x":mousePos.x,"y":mousePos.y})
+        elif num == 2:
+            self.Sequence.append({"type":"drag","x":mousePos.x,"y":mousePos.y,"duration":1})
+        elif num == 3:
+            self.Sequence.append({"type":"popout","x":mousePos.x,"y":mousePos.y})
+        elif num == 4:
+            self.Sequence.append({"type":"mouseClick","x":mousePos.x,"y":mousePos.y,"key":"left"})
         
     
 
