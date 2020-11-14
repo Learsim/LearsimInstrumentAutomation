@@ -14,7 +14,7 @@ from os import system, name
 
 screenWidht, screenHeight = pyautogui.size()
 configLocation = "config.json"
-ADDRESS_OFFSET = (0x3592528)
+ADDRESS_OFFSET = (0x3598888)
 
 #0x7ff6b1ba2528
 
