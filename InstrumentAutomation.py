@@ -14,7 +14,13 @@ from os import system, name
 
 screenWidht, screenHeight = pyautogui.size()
 configLocation = "config.json"
-ADDRESS_OFFSET = (0x3592528)
+configurationFile = open(configLocation, "r")
+Configuration = json.loads(configurationFile.read())
+ADDRESS_OFFSET = int(Configuration['Offset'],0)
+for Seq in Configuration['Sequences']:
+    if Seq['GUID'] == Configuration['Current']:
+        steps = Seq['Steps']
+
 
 #0x7ff6b1ba2528
 
@@ -27,7 +33,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         toggleMemoryRead.triggered.connect(self.toggleReading)
         recordNewSequence = menu.addAction("Record New Sequence")
         recordNewSequence.triggered.connect(self.NewSequence)
-        #recordNewSequence.setEnabled(False)
+        recordNewSequence.setEnabled(False)
         openConfig = menu.addAction("Open Configuration")
         openConfig.triggered.connect(self.open_config)
 
@@ -72,8 +78,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.recording.start()
 
 
-f = open(configLocation, "r")
-steps = json.loads(f.read())
+
 
 def move(x,y):
     print(f'Moving to {x},{y}')
@@ -126,7 +131,7 @@ def combKeyPress(btn1,btn2):
     pyautogui.keyUp(btn1)
     return True
 def doAuto():
-    for step in steps['steps']:
+    for step in steps:
         if step['type'] == "move":
             move(step['x'],step['y'])
         elif step['type'] == "drag":
@@ -155,17 +160,18 @@ class MemoryRead (threading.Thread):
         self.readingMemory = False
         self.recordingThread = False
         self.thread = ''
+        
     def run(self):
         while self.RunThread:
             if not self.paused and not self.readingMemory:
                 try:                
                     pm = pymem.Pymem("FlightSimulator.exe")
-                    client = pymem.process.module_from_name(pm.process_handle, "FlightSimulator.exe").lpBaseOfDll
-                    self.thread = ReadMemoryAdress(pm,client)
+                    self.client = pymem.process.module_from_name(pm.process_handle, "FlightSimulator.exe").lpBaseOfDll
+                    self.thread = ReadMemoryAdress(pm,self.client)
                     self.thread.start()
                     self.readingMemory = True
                     self.tray_icon.setNewIcon(QtGui.QIcon("assets/iconG.png"))
-                    self.tray_icon.setNewToolTip(f"Reading memory @ {hex(client+  0x3592528)}")
+                    self.tray_icon.setNewToolTip(f"Reading memory @ {hex(self.client+  0x3592528)}")
                     
 
                 except pymem.exception.ProcessNotFound:
@@ -181,10 +187,9 @@ class MemoryRead (threading.Thread):
                     
         
     def exitThread(self):
-        self.RunThread = False
-        if self.recordingThread:    
-            if self.thread.is_alive():
-                self.thread.exitThread()
+        self.RunThread = False 
+        if self.readingMemory:
+            self.thread.exitThread()
     
     def togglePauseReading (self):
         
@@ -192,12 +197,16 @@ class MemoryRead (threading.Thread):
         if(self.paused):
             self.tray_icon.setIcon(QtGui.QIcon("assets/icon.png"))
             self.tray_icon.setNewToolTip(f"Not Monitoring Memory (Paused)")
+        elif(not self.paused and self.readingMemory):
+            self.tray_icon.setIcon(QtGui.QIcon("assets/iconG.png"))
+            self.tray_icon.setNewToolTip(f"Reading memory @ {hex(self.client+  0x3592528)}")
         else:
             self.tray_icon.setNewToolTip(f"Not Monitoring Memory")
+        
 
         
     
-class ReadMemoryAdress(threading.Thread):
+class ReadMemoryAdress(threading.Thread): 
     def __init__(self,pm,client):
         
         threading.Thread.__init__(self)
@@ -223,11 +232,15 @@ class ReadMemoryAdress(threading.Thread):
                     print("Detected No Cockpit")
                 else:
                     self.value = testread
+
                 time.sleep(1)    
         except:
+            print("Error Reading")
             return
     def exitThread(self):
         self.RunThread = False
+
+
 class RecordInput(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
