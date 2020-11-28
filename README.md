@@ -1,5 +1,6 @@
 # LearsimInstrumentAutomation
 Automation Tool For FS2020 Instruments
+
 ## How to run
 
 ### Requirments
@@ -19,3 +20,6 @@ Then ```.\Scripts\activate ```
 Then ```pip install -r requirements.txt ```
 
 Then just run it by ```python InstrumentAutomation.py```
+
+# Soon ready for first release
+
