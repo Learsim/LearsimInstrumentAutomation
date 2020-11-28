@@ -87,6 +87,7 @@ window.onclick = e => {
         }
         selected = e.target.id;
         document.getElementById("typeselector").disabled = false;
+        document.getElementById("removestep").disabled = false;
         config.Sequences.forEach(element => {
             if(element.GUID == config.Current){
                 currentconfig = element;
@@ -436,9 +437,10 @@ function updateConfig(event){
     }
 }
 function saveConfig(){
+    delete config["ServerOffset"];
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST","SaveConfig",true)
-    xhttp.send("config="+JSON.stringify(config))
+    xhttp.send(JSON.stringify(config))
 }
 
 
@@ -471,9 +473,54 @@ function getConfig(){
           document.getElementById("moveupbtn").disabled = true
           document.getElementById("movedownbtn").disabled = true
           selected = null
+          if(config.Offset != config.ServerOffset){
+              document.getElementById("newoffsetcontainer").style.visibility = "visible";
+          }
+        document.getElementById('steps').scrollTop = 0;
           
         }
       };
     xhttp.open("GET","GetConfig",true);
     xhttp.send()
+}
+function changeToNewAdress(){
+    config.Offset = config.ServerOffset;
+    document.getElementById("newoffsetcontainer").style.visibility = "hidden";
+    document.getElementById("adrinput").value = config.Offset;
+
+}
+function addNewStep(top){
+    
+    config.Sequences.forEach(element => {
+        if(element.GUID == config.Current){
+            currentconfig = element;
+        }
+    });
+    if(top){
+        currentconfig.Steps.unshift({"type":"move","x":1,"y":1})
+        setActiveAsSeq()
+        document.getElementById('steps').scrollTop = 0;
+
+    }else{
+        currentconfig.Steps.push({"type":"move","x":1,"y":1})
+        setActiveAsSeq()
+        document.getElementById('steps').scrollTop = 99999999;
+
+    }
+
+
+}
+function removeStep(){
+    config.Sequences.forEach(element => {
+        if(element.GUID == config.Current){
+            currentconfig = element;
+        }
+    });
+    currentconfig.Steps.splice(selected-1,1)
+    selected = null
+    document.getElementById("typeselector").disabled = true
+    document.getElementById("selectioncontainer").innerHTML = ""
+    document.getElementById("removestep").disabled = true
+
+    setActiveAsSeq()
 }
