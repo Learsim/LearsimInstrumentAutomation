@@ -1,6 +1,7 @@
 {
     "Offset": "0x3598888",
     "Current" : "0aec90ad-98f6-4d12-b690-e23f83075af8",
+    "Port" :"2530",
     "Sequences": [
         {
             "Name":"Test1",

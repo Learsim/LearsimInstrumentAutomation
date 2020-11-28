@@ -1,81 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width§ initial-scale=1.0">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
 
     <title>Document</title>
 </head>
-<body class="m-20">
+
+<body class="m-20" onload="onload()">
     <script src="script.js"></script>
     <div class="container mx-auto">
-    <h1 class="text-4xl">Leasim Automation Configuration</h1>
+        <h1 class="text-4xl">Leasim Automation Configuration</h1>
         <div class="grid grid-cols-6 ">
             <div class="col-start-1 col-span-4">
                 <div class="container mx-auto">
                     <h1 class="text-2xl">Sequence</h1>
-                    <div class=" h-48r container mx-auto bg-gray-100 m-3 p-3 rounded-lg shadow-lg inside-box-shadow overflow-auto">
-                        <div class="container">
-                            <div class=" h-10 rounded shadow-sm bg-white p-1 m-1 flex content-center justify-between  step" id="1">                       
-                                <span class="type m-auto">Move</span>
-                                <span class="attrib m-auto">x=10 y=10</span>
-                                <span class="type m-auto">1</span>
-                            </div>
-                        </div>
-                        <div class="container">
-                            <div class=" h-10 rounded shadow-sm bg-white p-1 m-1 flex content-center justify-between step" id="2">                       
-                                <span class="type m-auto">Move</span>
-                                <span class="attrib m-auto">x=10 y=10</span>
-                                <span class="type m-auto">1</span>
-                            </div>
-                        </div>
+                    <div
+                        class=" h-48r container mx-auto bg-gray-100 m-3 p-3 rounded-lg shadow-lg inside-box-shadow overflow-auto" id="steps">
+                       
                     </div>
-                  </div>
                 </div>
-                <div class="col-start-5 col-span-2"> 
-                    <div class="container mx-auto">
-                        <h1 class="text-2xl">Config</h1>
-                    </div>
-                    <div class="container m-3">
-                        <div class="container">
+            </div>
+            <div class="col-start-5 col-span-2">
+                <div class="container mx-auto">
+                    <h1 class="text-2xl">Config</h1>
+                </div>
+                <div class="container m-3">
+                    <div class="container">
                         <span>Memory Adress:</span>
-                        <input class="mt-1 relative rounded-md shadow-sm border-2 p-1 border-gray-100" type="text" name="adress" id="adrinput" placeholder="0x1234567"/>
+                        <input class="mt-1 relative rounded-md shadow-sm border-2 p-1 border-gray-100" type="text"
+                            name="adress" id="adrinput" placeholder="0x1234567" />
                     </div>
                     <div class="container">
                         <span>Port:</span>
-                        <input class="mt-1 relative rounded-md shadow-sm border-2 p-1 border-gray-100" type="text" name="adress" id="adrinput" placeholder="2530" value="2530"/>
+                        <input class="mt-1 relative rounded-md shadow-sm border-2 p-1 border-gray-100" type="text"
+                            name="adress" id="portinput" placeholder="2530" value="2530" />
                     </div>
                     <div>
                         <span>Active Sequence:</span>
-                        <select class="mt-1 relative rounded-md shadow-sm border-2 p-1 border-gray-100">
-                            <option value="a4d831f0-c9df-4315-96da-e6b25e231c59">CJ4</option>
-                            <option value="455383fc-ef32-4b41-a08d-76207cedb669">787</option>
-                        </select> 
+                        <select class="mt-1 relative rounded-md shadow-sm border-2 p-1 border-gray-100" id="activeSelect" onchange="changeActive(this,event)">
+                            
+                        </select>
                     </div>
-                        <div class="container h-96 container mx-auto bg-gray-100 m-3 p-3 rounded-lg shadow-md inside-box-shadow">
-                            <p class="text-xl">Step Config</p> 
-                            <p>Move</p>
-                            <button class="rounded-full p-1 px-3 bg-blue-500 text-white focus:outline-none">▲</button>
-                            <button class="rounded-full p-1 px-3 bg-blue-500 text-white focus:outline-none">▼</button>
-                            </br>
-                            <p>Type</p>
-                            <select class="mt-1 relative rounded-md shadow-sm border-2 p-1 border-gray-100">
-                                <option>move</option>
-                                <option>drag</option>
-                                <option>popout</option>
-                                <option>mouseClick</option>
-                                <option>keyPress</option>
-                                <option>delay</option>
-                                <option>combinationPress</option>
-                            </select> 
-                        </div>
-                        <button class="shadow-lg rounded-lg p-2 m-2 text-xl px-10 bg-blue-500 text-white hover:bg-white hover:shadow-md hover:text-blue-500 transition-colors focus:outline-none duration-200 ring-0 focus:shadow-sm transition-shadow	">Save</button>
+                    <div
+                        class="container h-96 container mx-auto bg-gray-100 m-3 p-3 rounded-lg shadow-md inside-box-shadow">
+                        <p class="text-xl">Step Config</p>
+                        <p>Move</p>
+                        <button disabled class="disabled:opacity-50 rounded-full p-1 px-3 bg-blue-500 text-white focus:outline-none" onclick="moveup()" id="moveupbtn" >▲</button>
+                        <button disabled class="disabled:opacity-50 rounded-full p-1 px-3 bg-blue-500 text-white focus:outline-none" onclick="movedown()" id="movedownbtn" >▼</button>
+                        </br>
+                        <p>Type</p>
+                        <select class="mt-1 relative rounded-md shadow-sm border-2 p-1 border-gray-100" id="typeselector" disabled>
+                            <option value="move">Move</option>
+                            <option value="drag">Drag</option>
+                            <option value="popout">Pop Out</option>
+                            <option value="mouseClick">Mouse Click</option>
+                            <option value="keyPress">Key Press</option>
+                            <option value="delay">Delay</option>
+                            <option value="combinationPress">Combination Key Press</option>
+                        </select>
+                        <div class="container" id="selectioncontainer">
+                             </div>
                     </div>
+                    <button
+                        class="shadow-lg rounded-lg p-2 m-2 text-xl px-10 bg-blue-500 text-white hover:bg-white hover:shadow-md hover:text-blue-500 transition-colors focus:outline-none duration-200 ring-0 focus:shadow-sm transition-shadow	" onclick="saveConfig()">Save</button>
                 </div>
             </div>
         </div>
     </div>
+    </div>
+    <button
+                        class="shadow-lg rounded-lg p-2 m-2 text-xl px-10 bg-red-500 text-white hover:bg-white hover:shadow-md hover:text-red-500 transition-colors focus:outline-none duration-200 ring-0 focus:shadow-sm transition-shadow	" onclick="getConfig()">Cancel</button>
+                
 </body>
+
 </html>

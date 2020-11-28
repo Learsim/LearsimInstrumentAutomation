@@ -1,3 +1,8 @@
 .h-48r{
     height: 48rem;
 }
+
+button:disabled{
+    opacity: 0.5;
+    cursor: default;
+}
