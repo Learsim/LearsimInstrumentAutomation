@@ -12,6 +12,8 @@ import keyboard
 import requests
 from PySide2 import QtWidgets, QtGui
 from os import system, name
+from flask import Flask, render_template, request
+
 offsetURL = "https://learsim.se/api/getOffset.php"
 offsetResponse = requests.get(url=offsetURL).json()['Offset']
 screenWidht, screenHeight = pyautogui.size()
@@ -295,7 +297,46 @@ class RecordInput(threading.Thread):
             self.Sequence.append(
                 {"type": "mouseClick", "x": mousePos.x, "y": mousePos.y, "key": "left"})
 
+def updateConfigFile(content):
+    with open('config.json', 'w') as outfile:
+        json.dump(content, outfile)
 
+        
+app = Flask(__name__)
+@app.route('/GetConfig')
+def getConfiguration():
+    returnObj = Configuration
+    returnObj['ServerOffset'] = offsetResponse
+    return Configuration
+@app.route('/SaveConfig',methods = ['POST'])
+def saveConfig():
+    global Configuration
+    if request.method == 'POST':
+       obj = json.loads(request.data)
+       Configuration = obj
+       updateConfigFile(Configuration)
+       return "200"
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
+class WebServer(threading.Thread):
+    def __init__(self,PORT):
+
+        threading.Thread.__init__(self)
+        self.PORT = PORT
+        self.RunThread = True
+       
+    def run(self):
+        app.run(host="0.0.0.0",port=self.PORT)
+
+    def exitThread(self):
+        self.RunThread = False
+    
+
+
+    
 def main():
 
     app = QtWidgets.QApplication(sys.argv)
@@ -305,9 +346,16 @@ def main():
     mR.start()
     tray_icon.setThread(mR)
     tray_icon.show()
-
+    webthread = WebServer(Configuration['Port'])
+    webthread.start()
+    
+    
+    
     sys.exit(app.exec_())
+    
 
 
 if __name__ == '__main__':
     main()
+
+
