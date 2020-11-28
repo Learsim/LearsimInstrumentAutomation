@@ -1,5 +1,21 @@
 # LearsimInstrumentAutomation
 Automation Tool For FS2020 Instruments
-# !!IT IS NOT DONE!!
+## How to run
 
-Right now working on UI for step configuration, web based. 
+### Requirments
+- Python 3.8
+- pip
+- Python Virtualenv
+
+### Running
+Get the code either by downloading zip or ```git clone https://github.com/axdra/LearsimInstrumentAutomation.git```
+
+Then navigate to directory and open cmd or ```cd LearsimInstrumentAutomation```
+
+Then run ```virtualenv .```
+
+Then ```.\Scripts\activate ```
+
+Then ```pip install -r requirements.txt ```
+
+Then just run it by ```python InstrumentAutomation.py```

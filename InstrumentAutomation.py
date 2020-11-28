@@ -50,7 +50,8 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
 
     def onTrayIconActivated(self, reason):
         if reason == self.DoubleClick:
-            print("DoubleClick")
+            os.system('start http://localhost:'+Configuration['Port'])
+
 
     def exit(self, reason):
         self.setIcon(QtGui.QIcon("assets/iconE.png"))
@@ -64,7 +65,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.thread = thread
 
     def open_config(self):
-        os.system('start config.json')
+        os.system('start http://localhost:'+Configuration['Port'])
 
     def toggleReading(self):
         self.thread.togglePauseReading()
