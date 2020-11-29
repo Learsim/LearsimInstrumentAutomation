@@ -303,13 +303,13 @@ def updateConfigFile(content):
         json.dump(content, outfile)
 
         
-app = Flask(__name__)
-@app.route('/GetConfig')
+webapp = Flask(__name__)
+@webapp.route('/GetConfig')
 def getConfiguration():
     returnObj = Configuration
     returnObj['ServerOffset'] = offsetResponse
     return Configuration
-@app.route('/SaveConfig',methods = ['POST'])
+@webapp.route('/SaveConfig',methods = ['POST'])
 def saveConfig():
     global Configuration
     if request.method == 'POST':
@@ -317,7 +317,7 @@ def saveConfig():
        Configuration = obj
        updateConfigFile(Configuration)
        return "200"
-@app.route("/")
+@webapp.route("/")
 def index():
     return render_template("index.html")
 
@@ -330,7 +330,7 @@ class WebServer(threading.Thread):
         self.RunThread = True
        
     def run(self):
-        app.run(host="0.0.0.0",port=self.PORT)
+        webapp.run(host="0.0.0.0",port=self.PORT)
 
     def exitThread(self):
         self.RunThread = False
