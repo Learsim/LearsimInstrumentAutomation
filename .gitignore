@@ -131,3 +131,4 @@ dmypy.json
 .pyre/
 pyvenv.cfg
 bin
+*.swp

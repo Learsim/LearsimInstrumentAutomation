@@ -25,7 +25,9 @@ function setActive(seq){
     
     var steps = document.getElementById("steps");
     steps.innerHTML = "";
-   
+    document.getElementById("seqnameInput").value = seq.Name;
+    document.getElementById("activeSelect").value = seq.GUID;
+
     let num = 1;
     seq.Steps.forEach(element => {
 
@@ -360,10 +362,13 @@ function changeActive(event)
 }
 
 function inputChange(event){
-    
     config.Sequences.forEach(element => {
         if(element.GUID == config.Current){
-            element.Steps[selected-1][event.target.title] = [event.target.value]
+            if([event.target.title] == "duration" || [event.target.title] == "x" || [event.target.title] =="y"){
+                element.Steps[selected-1][event.target.title] = parseInt(event.target.value)               
+            }else{
+                element.Steps[selected-1][event.target.title] = event.target.value
+            }
         }
     });
     setActiveAsSeq();
@@ -436,6 +441,25 @@ function updateConfig(event){
             break;
     }
 }
+
+function updateName(event){
+    config.Sequences.forEach(element => {
+        
+        if(element.GUID == config.Current){
+            element.Name = event.target.value
+            options = document.getElementById("activeSelect").options
+            
+            for(var i = 0; i< config.Sequences.length; i++){
+                if(options[i].value == element.GUID){
+                    options[i].innerHTML = event.target.value
+                }
+            }
+
+        }
+    });
+    
+}
+
 function saveConfig(){
     delete config["ServerOffset"];
     var xhttp = new XMLHttpRequest();
@@ -467,7 +491,7 @@ function getConfig(){
           document.getElementById("portinput").value = config.Port;
           document.getElementById("adrinput").addEventListener("change",updateConfig)
           document.getElementById("portinput").addEventListener("change",updateConfig)
-          
+          document.getElementById("seqnameInput").addEventListener("change",updateName)
           document.getElementById("selectioncontainer").innerHTML = ""
           document.getElementById("typeselector").disabled = true
           document.getElementById("moveupbtn").disabled = true

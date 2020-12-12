@@ -77,6 +77,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.setIcon(icon)
 
     def NewSequence(self):
+        self.recordNewSequence.text = "Stop Recording"
         self.isRecording = True
         self.recording = RecordInput()
         self.recording.start()
@@ -187,7 +188,7 @@ class MemoryRead (threading.Thread):
                     self.readingMemory = True
                     self.tray_icon.setNewIcon(QtGui.QIcon("assets/iconG.png"))
                     self.tray_icon.setNewToolTip(
-                        f"Reading memory @ {hex(self.client+  0x3592528)}")
+                        f"Reading memory @ {hex(self.client+  ADDRESS_OFFSET)}")
 
                 except pymem.exception.ProcessNotFound:
                     print("Could not attach to FS2020, is it running?")
@@ -238,7 +239,6 @@ class ReadMemoryAdress(threading.Thread):
                     break
                 testread = self.Process.read_int(
                     self.ProcessModule + ADDRESS_OFFSET)
-
                 if(testread == 256 and testread != self.value and (self.value == 0 or self.value == 'NaN')):
                     doAuto()
                     self.value = testread
@@ -248,7 +248,6 @@ class ReadMemoryAdress(threading.Thread):
                     print("Detected No Cockpit")
                 else:
                     self.value = testread
-
                 time.sleep(1)
         except:
             print("Error Reading")
@@ -264,17 +263,13 @@ class RecordInput(threading.Thread):
         self.RunThread = True
         self.Recording = True
         self.Sequence = []
-        keyboard.add_hotkey('num 1', self.KeyPress, args=[1])
-        keyboard.add_hotkey('num 2', self.KeyPress, args=[2])
-        keyboard.add_hotkey('num 3', self.KeyPress, args=[3])
-        keyboard.add_hotkey('num 4', self.KeyPress, args=[4])
+        
 
     def run(self):
         print("Recording New Input")
-        while self.Recording:
-            if keyboard.is_pressed("F12"):
-                self.exitThread()
-                return
+        while True:
+            if(self.RunThread == False):
+                break
 
     def exitThread(self):
         print("Stopped Recording")
@@ -301,6 +296,12 @@ class RecordInput(threading.Thread):
 def updateConfigFile(content):
     with open('config.json', 'w') as outfile:
         json.dump(content, outfile)
+        global ADDRESS_OFFSET
+        global steps
+        ADDRESS_OFFSET = int(Configuration['Offset'], 0)
+        for Seq in Configuration['Sequences']:
+            if Seq['GUID'] == Configuration['Current']:
+                steps = Seq['Steps']
 
         
 webapp = Flask(__name__)
