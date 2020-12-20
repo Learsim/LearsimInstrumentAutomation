@@ -11,7 +11,7 @@
     <title>Learsim Config</title>
 </head>
 
-<body class="m-20" onload="onload()">
+<body class="m-20 mt-5 mb-0" onload="onload()">
     <script src="static/js/script.js"></script>
     <div class="container mx-auto">
         <h1 class="text-4xl">Leasim Automation Configuration</h1>
@@ -53,6 +53,8 @@
                             id="activeSelect" onchange="changeActive(this,event)">
 
                         </select>
+                        <button class="disabled:opacity-50 rounded-full p-1 px-3 bg-blue-500 text-white focus:outline-none"
+                            onclick="addSeq()" id="moveupbtn">Add new</button>
                     </div>
                     <div
                         class=" relative container h-96 container mx-auto bg-gray-100 m-3 p-3 rounded-lg shadow-md inside-box-shadow">

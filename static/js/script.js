@@ -551,6 +551,17 @@ function removeStep(){
 
 function addSeq(){
     config.Sequences.push({Name: "Unnamed Sequence "+config.Sequences.length,Steps:[],GUID: generateUUID()})
+    var activeSelect = document.getElementById("activeSelect");
+          activeSelect.innerHTML = ""
+          config.Sequences.forEach(element => {
+              var x = document.createElement("option");
+              x.text = element.Name;
+              x.value = element.GUID;
+              activeSelect.add(x)
+              if(element.GUID == config.Current){
+                  setActive(element)
+              }
+          });
 }
 
 function generateUUID() { // Public Domain/MIT
