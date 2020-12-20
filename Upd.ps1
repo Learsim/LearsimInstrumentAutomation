@@ -1,8 +1,7 @@
 #Getting newest source from github
-git clone -q https://github.com/axdra/LearsimInstrumentAutomation temp
 $files = Get-ChildItem .
 foreach ($file in $files){
-    if($file.name -ne "Update.ps1" -And $file.name -ne "temp" -And $file.name -ne "config.json"){
+    if($file.name -ne "Upd.ps1" -And $file.name -ne "temp" -And $file.name -ne "config.json"){
         Remove-Item -Recurse -Force $file
     }
 }
