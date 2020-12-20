@@ -57,12 +57,13 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.setIcon(QtGui.QIcon("assets/iconE.png"))
         self.setToolTip("Shutting Down...")
         self.thread.exitThread()
-        if self.isRecording:
-            self.recording.exitThread()
+        self.webthread.exitThread()
         sys.exit()
 
     def setThread(self, thread):
         self.thread = thread
+    def setWebThread(self, thread):
+        self.webthread = thread
 
     def open_config(self):
         os.system('start http://localhost:'+Configuration['Port'])
@@ -321,6 +322,16 @@ def saveConfig():
 @webapp.route("/")
 def index():
     return render_template("index.html")
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+
+@webapp.route('/shutdown', methods=['POST'])
+def shutdown():
+    shutdown_server()
+    return 'Server shutting down...'
 
 
 class WebServer(threading.Thread):
@@ -329,11 +340,12 @@ class WebServer(threading.Thread):
         threading.Thread.__init__(self)
         self.PORT = PORT
         self.RunThread = True
-       
+        
     def run(self):
-        webapp.run(host="0.0.0.0",port=self.PORT)
+        webapp.run(host="0.0.0.0",port=self.PORT,threaded=True)
 
     def exitThread(self):
+        requests.post(url="http://localhost:"+str(self.PORT)+"/shutdown")
         self.RunThread = False
     
 
@@ -350,7 +362,7 @@ def main():
     tray_icon.show()
     webthread = WebServer(Configuration['Port'])
     webthread.start()
-    
+    tray_icon.setWebThread(webthread)
     
     
     sys.exit(app.exec_())
