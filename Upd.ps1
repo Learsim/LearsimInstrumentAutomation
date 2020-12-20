@@ -15,5 +15,4 @@ Copy-Item -Path ".\temp\templates" -Destination "." -Recurse
 Copy-Item -Path ".\temp\InstrumentAutomation.py" -Destination "."
 pip install -q -r requirements.txt
 Remove-Item -Force "requirements.txt"
-Copy-Item -Path ".\temp\Update.ps1" -Destination "."
 Remove-Item -Recurse -Force .\temp
