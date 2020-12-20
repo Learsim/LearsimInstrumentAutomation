@@ -6,6 +6,7 @@ foreach ($file in $files){
     }
 }
 #Copy Files
+Copy-Item -Path ".\temp\Update.bat" -Destination "."
 Copy-Item -Path ".\temp\requirements.txt" -Destination "."
 Copy-Item -Path ".\temp\config_example.json" -Destination "."
 Copy-Item -Path ".\temp\static" -Destination "." -Recurse
