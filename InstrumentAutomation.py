@@ -112,9 +112,9 @@ def mouseClick(x, y, btn):
     print(f'Pressing {btn} click at {x},{y}')
     pyautogui.moveTo(x=x, y=y)
     time.sleep(0.01)
-    pyautogui.mouseDown(button='left')
+    pyautogui.mouseDown(button=btn)
     time.sleep(0.01)
-    pyautogui.mouseUp(button='left')
+    pyautogui.mouseUp(button=btn)
     return True
 
 
